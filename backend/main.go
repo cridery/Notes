@@ -8,6 +8,8 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 type App struct {
@@ -33,23 +35,28 @@ func (app *App) createNoteHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	router := mux.NewRouter()
+
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:3000"})
+	corsMiddleware := handlers.CORS(headers, methods, origins)
+
 	db, err := gorm.Open(sqlite.Open("notes.db"), &gorm.Config{})
 	if err != nil {
 		fmt.Println("failed to connect database")
 		os.Exit(1)
 	}
 
+	db.AutoMigrate(&Note{})
+
 	app := App{db: db}
 
-	http.HandleFunc("/create", app.createNoteHandler)
+	router.HandleFunc("/create", app.createNoteHandler).Methods("POST")
 
 	fs := http.FileServer(http.Dir("../frontend/build"))
 	http.Handle("/", fs)
 
-	fmt.Println("listening on port 3000")
-	err = http.ListenAndServe(":3000", nil)
-	if err != nil {
-		fmt.Println("Failed to start server")
-		os.Exit(1)
-	}
+	fmt.Println("listening on port 8080")
+	err = http.ListenAndServe(":8080", corsMiddleware(router))
 }

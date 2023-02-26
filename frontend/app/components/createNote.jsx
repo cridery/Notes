@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { goPost } from "../helpers/goPost";
 
+
 const CreateNoteForm = () => {
   const [noteData, setNoteData] = useState({
     title: "",
@@ -17,7 +18,7 @@ const CreateNoteForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     const response = await goPost(noteData)
 
     console.log(response);

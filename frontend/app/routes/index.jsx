@@ -5,7 +5,6 @@ export default function Index() {
   return (
     <>
       <CreateNoteForm />
-      <div>Test</div>
     </>
   );
 }

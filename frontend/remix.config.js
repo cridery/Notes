@@ -4,8 +4,12 @@ module.exports = {
   future: {
     unstable_tailwind: true,
   },
-  // appDirectory: "app",
-  // assetsBuildDirectory: "public/build",
-  // serverBuildPath: "build/index.js",
-  // publicPath: "/build/",
+  appDirectory: "app",
+  assetsBuildDirectory: "public/build",
+  publicPath: "/build/",
+  serverBuildDirectory: "build",
+  ignoredRouteFiles: ["**/.*"],
+  serverDependenciesToBundle: [
+    "axios"
+  ],
 };

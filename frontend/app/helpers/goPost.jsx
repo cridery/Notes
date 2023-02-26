@@ -1,11 +1,10 @@
+import axios from "axios";
+
 export const goPost = async (noteData) => {
-  const response = await fetch("/notes", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(noteData),
-  });
-  const data = await response.json();
-  return data;
+  try {
+    const response = await axios.post("http://localhost:8080/create", noteData);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
 };
