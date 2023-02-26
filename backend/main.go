@@ -22,6 +22,18 @@ type Note struct {
 	Body  string `json:"body"`
 }
 
+func (app *App) getNotesHandler(w http.ResponseWriter, r *http.Request){
+	var notes []Note
+	result := app.db.Find(&notes)
+
+	if result.Error != nil {
+        http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+        return
+    }
+
+	json.NewEncoder(w).Encode(notes)
+}
+
 func (app *App) createNoteHandler(w http.ResponseWriter, r *http.Request) {
 	var note Note
 	err := json.NewDecoder(r.Body).Decode(&note)
@@ -53,9 +65,9 @@ func main() {
 	app := App{db: db}
 
 	router.HandleFunc("/create", app.createNoteHandler).Methods("POST")
-
-	fs := http.FileServer(http.Dir("../frontend/build"))
-	http.Handle("/", fs)
+	router.HandleFunc("/notes", app.getNotesHandler).Methods("GET")
+	// fs := http.FileServer(http.Dir("../frontend/build"))
+	// http.Handle("/", fs)
 
 	fmt.Println("listening on port 8080")
 	err = http.ListenAndServe(":8080", corsMiddleware(router))
