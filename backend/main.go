@@ -45,6 +45,10 @@ func (app *App) createNoteHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(note)
 }
 
+// func (app *App) editNoteHandler(w http.ResponseWriter, r *http.Request){
+	
+// }
+
 func main() {
 
 	router := mux.NewRouter()
