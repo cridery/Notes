@@ -27,7 +27,7 @@ const CreateNoteForm = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <Form method="post" >
         <div className="mb-4">
           <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
             Title
@@ -56,16 +56,14 @@ const CreateNoteForm = () => {
           />
         </div>
         <div className="flex justify-end">
-          {/* <Form method="get" action=""> */}
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
               Create Note
             </button>
-          {/* </Form> */}
         </div>
-      </form>
+      </Form>
     </>
   );
 };
