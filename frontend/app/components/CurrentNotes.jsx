@@ -2,20 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useLoaderData } from "@remix-run/react";
 
 const CurrentNotesList = () => {
+  const notes = useLoaderData();
 
-  const notes = useLoaderData(); // add null check here
-
-
-  const data = notes?.notes
-
-  console.log(data);
+  const data = notes?.notes;
 
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [selectedNoteBody, setSelectedNoteBody] = useState(null);
 
   useEffect(() => {
     const selectedNote = selectedNoteId ? data.find(note => note.ID === selectedNoteId) : null;
-    setSelectedNoteBody(selectedNote);
+    setSelectedNoteBody(selectedNote?.body);
   }, [selectedNoteId, data]);
 
   return (
@@ -29,15 +25,13 @@ const CurrentNotesList = () => {
       </div>
       <div className="w-3/4">
         {selectedNoteId !== null ? (
-          <div>{selectedNoteBody}</div>
+          <div>{selectedNoteBody || "No note selected."}</div>
         ) : (
           <div>Please select a note.</div>
         )}
-
       </div>
-   
     </div>
-  )
+  );
 };
 
 export default CurrentNotesList;
