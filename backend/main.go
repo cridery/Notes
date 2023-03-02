@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type App struct {
@@ -22,14 +22,13 @@ type Note struct {
 	Body  string `json:"body"`
 }
 
-func (app *App) getNotesHandler(w http.ResponseWriter, r *http.Request){
+func (app *App) getNotesHandler(w http.ResponseWriter, r *http.Request) {
 	var notes []Note
 	result := app.db.Find(&notes)
-
 	if result.Error != nil {
-        http.Error(w, result.Error.Error(), http.StatusInternalServerError)
-        return
-    }
+		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(notes)
 }
@@ -45,9 +44,28 @@ func (app *App) createNoteHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(note)
 }
 
-// func (app *App) editNoteHandler(w http.ResponseWriter, r *http.Request){
-	
-// }
+func (app *App) updateNoteHandler(w http.ResponseWriter, r *http.Request) {
+    id := mux.Vars(r)["id"]
+
+    var note Note
+    err := json.NewDecoder(r.Body).Decode(&note)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    // Update the note record in the database with the new values
+    result := app.db.Model(&note).Where("id = ?", id).Updates(&note)
+    if result.Error != nil {
+        http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Encode and send back the updated note object
+    response := map[string]interface{}{"success": true, "note": note}
+    json.NewEncoder(w).Encode(response)
+}
+
 
 func main() {
 
@@ -70,9 +88,11 @@ func main() {
 
 	router.HandleFunc("/create", app.createNoteHandler).Methods("POST")
 	router.HandleFunc("/notes", app.getNotesHandler).Methods("GET")
-	// fs := http.FileServer(http.Dir("../frontend/build"))
-	// http.Handle("/", fs)
+	router.HandleFunc("/notes/{id}", app.updateNoteHandler).Methods("PUT")
 
 	fmt.Println("listening on port 8080")
 	err = http.ListenAndServe(":8080", corsMiddleware(router))
+	if err != nil {
+		fmt.Println(err)
+	}
 }

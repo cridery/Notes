@@ -7,6 +7,7 @@ import { goPost } from "../helpers/goPost";
 
 export const loader = async () => {
   const notes = await goGet("http://localhost:8080/notes");
+  console.log(notes)
   return { notes };
 };
 
@@ -25,6 +26,9 @@ export default function Index() {
     <>
       <div className="px-10 space-y-4">
         <CurrentNotesList />
+      </div>
+      <hr></hr>
+      <div className="px-10 pt-2">
         <CreateNoteForm />
       </div>
     </>

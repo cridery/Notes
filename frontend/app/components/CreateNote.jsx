@@ -27,6 +27,7 @@ const CreateNoteForm = () => {
 
   return (
     <>
+      <div className="text-xl font-semibold pb-4">Create a note</div>
       <Form method="post" >
         <div className="mb-4">
           <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
