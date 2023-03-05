@@ -67,6 +67,32 @@ func (app *App) updateNoteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func (app *App) deleteNoteHandler(w http.ResponseWriter, r *http.Request) {
+    // Extract the note ID from the URL parameters
+    id := mux.Vars(r)["id"]
+
+    // Find the note with the given ID in the database
+    var note Note
+    result := app.db.First(&note, id)
+    if result.Error != nil {
+        // If there is any other database error, return a 500 Internal Server Error HTTP status code
+        http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Delete the note from the database
+    result = app.db.Delete(&note)
+    if result.Error != nil {
+        http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Return a success response with a 200 OK HTTP status code
+    response := map[string]interface{}{"success": true}
+    json.NewEncoder(w).Encode(response)
+}
+
+
 func main() {
 
 	router := mux.NewRouter()
@@ -89,6 +115,7 @@ func main() {
 	router.HandleFunc("/create", app.createNoteHandler).Methods("POST")
 	router.HandleFunc("/notes", app.getNotesHandler).Methods("GET")
 	router.HandleFunc("/notes/{id}", app.updateNoteHandler).Methods("PUT")
+	router.HandleFunc("/notes/{id}", app.deleteNoteHandler).Methods("DELETE")
 
 	fmt.Println("listening on port 8080")
 	err = http.ListenAndServe(":8080", corsMiddleware(router))
