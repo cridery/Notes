@@ -1,4 +1,4 @@
-# Projektas
+# Notes project
 
 Here are the steps to start the project: <br>
 
